@@ -59,25 +59,3 @@ export const projects = [
   },
 ];
 
-export const skills = [
-  {
-    category: "Languages",
-    items: ["Go", "Python", "TypeScript", "JavaScript"],
-  },
-  {
-    category: "Backend & Infra",
-    items: ["FastAPI", "Gin", "Node.js", "Express.js", "Docker", "Redis", "Microservices"],
-  },
-  {
-    category: "Databases",
-    items: ["PostgreSQL", "MongoDB", "MySQL", "Redis"],
-  },
-  {
-    category: "AI / LLM",
-    items: ["Ollama", "LangGraph", "SSE streaming", "Prompt Engineering", "Pydantic"],
-  },
-  {
-    category: "Tools",
-    items: ["Git", "Postman", "Swagger / OpenAPI"],
-  },
-];
