@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #FAFAF7;
+  color: #16181D;
+}
+
+::selection {
+  background-color: #0F6E5D;
+  color: #FAFAF7;
+}
+
+a {
+  text-underline-offset: 3px;
+}
+
+/* Blinking terminal cursor for the signature element */
+.cursor-blink {
+  animation: blink 1.1s steps(1) infinite;
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-blink {
+    animation: none;
+    opacity: 1;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Visible keyboard focus */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #0F6E5D;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
