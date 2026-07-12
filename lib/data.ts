@@ -6,8 +6,8 @@ export const profile = {
   location: "Gwalior, Madhya Pradesh, India",
   // TODO: replace with your real contact details before deploying
   email: "tomaradarsh18@gmail.com",
-  linkedin: "https://www.linkedin.com/in/adarsh-singh-tomar-46b6451bb/",
-  github: "https://github.com/AdarshGT33",
+  linkedin: "www.linkedin.com/in/adarsh-singh-tomar-46b6451bb/",
+  github: "github.com/AdarshGT33",
   bio: "I build AI/ML systems and secure backend infra around them",
 };
 
