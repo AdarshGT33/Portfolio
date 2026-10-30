@@ -93,4 +93,9 @@ export const collage: CollageItem[] = [
   { kind: "photo", src: "/collage/moving-man.jpg", alt: "A moving man eventually meets his luck", tilt: 4, width: 165 },
   { kind: "photo", src: "/collage/tired-either-way.jpg", alt: "You will be tired either way — be tired from trying", tilt: -5, width: 160 },
   { kind: "photo", src: "/collage/bleach-spread.jpg", alt: "Bleach cast colour spread", tilt: 3, width: 158 },
+  { kind: "photo", src: "/collage/brings-me-joy.jpg", alt: "If it doesn't bring me joy, spark my curiosity or expand my world, I'm not doing it", tilt: -4, width: 162 },
+  { kind: "photo", src: "/collage/act-without-reward.jpg", alt: "Do as your heart desires and act without thinking of reward", tilt: 5, width: 168 },
+  { kind: "photo", src: "/collage/repetitive-courage.jpg", alt: "A creative career requires repetitive courage", tilt: -2, width: 152 },
+  { kind: "photo", src: "/collage/do-it-matrix.jpg", alt: "Do it fast or slow, well or badly — what each quadrant gives you", tilt: 4, width: 170 },
+  { kind: "photo", src: "/collage/yearning.jpg", alt: "No rigid rules for a vocation, only the yearning to participate in the work", tilt: -5, width: 156 },
 ];

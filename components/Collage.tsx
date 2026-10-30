@@ -16,7 +16,7 @@ export default function Collage() {
           <div
             key={i}
             style={{ transform: `rotate(${item.tilt}deg)`, top: NUDGE[i % NUDGE.length] }}
-            className="relative -ml-9 -mt-6 transition-transform duration-200 first:ml-0 sm:-ml-14 sm:-mt-8 hover:z-10 hover:scale-[1.06] hover:!rotate-0"
+            className="relative -ml-9 -mt-6 transition-transform duration-200 first:ml-0 sm:-ml-[84px] sm:-mt-8 hover:z-10 hover:scale-[1.06] hover:!rotate-0"
           >
             {item.kind === "photo" ? (
               // eslint-disable-next-line @next/next/no-img-element
