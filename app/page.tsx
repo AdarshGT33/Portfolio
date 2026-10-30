@@ -1,15 +1,15 @@
 import Hero from "@/components/Hero";
-import InfoGrid from "@/components/InfoGrid";
-import Projects from "@/components/Projects";
-import Footer from "@/components/Footer";
+import Collage from "@/components/Collage";
+import GitHubGraph from "@/components/GitHubGraph";
+import LocalTime from "@/components/LocalTime";
 
 export default function Home() {
   return (
-    <main className="mx-auto max-w-page px-6 sm:px-0">
+    <>
       <Hero />
-      <InfoGrid />
-      <Projects />
-      <Footer />
-    </main>
+      <Collage />
+      <GitHubGraph />
+      <LocalTime />
+    </>
   );
 }

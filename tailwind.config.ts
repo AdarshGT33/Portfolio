@@ -8,13 +8,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        paper: "#FAFAF7",
+        paper: "#F4EFE3",
         ink: "#16181D",
         "ink-soft": "#565A63",
-        hairline: "#E4E1D8",
-        surface: "#F1EFE7",
+        hairline: "#DFD6C3",
+        surface: "#EBE5D5",
         signal: "#0F6E5D",
         "signal-soft": "#E4EEEB",
+        ember: "#C0562A",
+        "ember-soft": "#F7E7DA",
       },
       fontFamily: {
         display: ["var(--font-display)", "sans-serif"],

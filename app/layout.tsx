@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter, IBM_Plex_Mono } from "next/font/google";
+import Nav from "@/components/Nav";
+import Footer from "@/components/Footer";
+import CherryBlossom from "@/components/CherryBlossom";
 import "./globals.css";
 
 const display = Space_Grotesk({
@@ -26,17 +29,29 @@ export const metadata: Metadata = {
     "Adarsh Singh Tomar builds AI/ML systems, backend infra, and agentic tools — currently building multilingual voice AI at Suraksha Lens.",
 };
 
+// Runs before first paint: picks the stored choice, else the OS preference.
+// Without this the page paints dark then flips, which is worse than either theme.
+const THEME_INIT = `try{var t=localStorage.getItem('theme');document.documentElement.dataset.theme=t==='light'||t==='dark'?t:(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark')}catch(e){}`;
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${display.variable} ${body.variable} ${mono.variable} font-body antialiased`}
       >
-        {children}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+        {/* Chrome lives in the layout, so petals, nav and footer survive route changes
+            and every page lands in the same 760px column. Only {children} swaps. */}
+        <CherryBlossom />
+        <main id="top" className="mx-auto flex min-h-screen max-w-page flex-col px-6 sm:px-0">
+          <Nav />
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </main>
       </body>
     </html>
   );

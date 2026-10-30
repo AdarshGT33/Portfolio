@@ -1,30 +1,53 @@
-import { profile } from "@/lib/data";
+import { profile, timeline, asides } from "@/lib/data";
 
 export default function Hero() {
   return (
-    <section className="pt-20 pb-12 sm:pt-28 sm:pb-10">
-      <p className="text-sm font-mono text-ink-soft mb-5">👋 hey, I&apos;m</p>
-
-      <h1 className="font-display font-semibold text-4xl sm:text-5xl tracking-tight text-ink leading-[1.1]">
+    <section className="pt-14 pb-10">
+      <h1 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
         {profile.name}
       </h1>
-
-      <p className="mt-3 font-display text-lg sm:text-xl text-signal font-medium">
-        {profile.role}
+      <p className="mt-1.5 text-[15px] text-ink-soft">
+        {profile.location}
       </p>
 
-      <p className="mt-3 max-w-[52ch] text-base sm:text-lg text-ink-soft leading-relaxed">
+      <p className="mt-8 text-[17px] leading-relaxed text-ink-soft">
         {profile.bio}
       </p>
-      <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-mono">
-        <a
-          href="/AdarshSinghTomarResume.pdf"
-          download
-          className="inline-flex items-center gap-1.5 rounded-md border border-ink text-ink px-3 py-1.5 hover:bg-ink hover:text-paper transition-colors"
-        >
-          Download resume ↓
-        </a>
+
+      <div className="mt-8 space-y-2.5 text-[17px] leading-relaxed text-ink-soft">
+        {timeline.map((t) => (
+          <p key={t.org}>
+            {t.lead}{" "}
+            <a
+              href={t.href}
+              className="text-link underline decoration-[color:var(--link-line)] underline-offset-[6px] transition-colors hover:text-link-hover hover:decoration-[color:var(--link)]"
+            >
+              {t.org}
+            </a>
+            {t.trail}
+          </p>
+        ))}
       </div>
+
+
+      <p className="mt-8 text-[17px] leading-relaxed text-ink-soft">
+        taking baby steps with{" "}
+        <a
+          href={`https://${profile.github}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-link transition-colors hover:text-link-hover"
+        >
+          open source
+        </a>
+        .
+      </p>
+
+      <blockquote className="mt-8 border-l border-hairline pl-5 space-y-4 text-[15px] leading-relaxed text-ink-soft">
+        {asides.map((line) => (
+          <p key={line}>{line}</p>
+        ))}
+      </blockquote>
     </section>
   );
 }

@@ -2,48 +2,119 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  scroll-behavior: smooth;
+/* ---------- Design tokens ----------
+   Dark is the default (Ichigo's shihakusho black + hair orange); light is the
+   hollow-mask bone white with the same orange, darkened to hold contrast.
+   An inline script in layout.tsx resolves data-theme before first paint, so
+   only these two blocks exist -- no prefers-color-scheme duplicate. */
+:root {
+  color-scheme: dark;
+  --bg: #000;
+  --ink: #fffdf7;                          /* primary text */
+  --muted: #c8c0b1;                        /* secondary text */
+  --line: rgba(255, 253, 247, 0.14);       /* hairlines / dividers */
+  --card: rgba(255, 253, 247, 0.06);       /* raised surfaces */
+  --card-line: rgba(255, 253, 247, 0.12);
+  --link: #f97316;                         /* every link / clickable */
+  --link-hover: #fdba74;                   /* lighter on hover (dark bg) */
+  --link-line: rgba(249, 115, 22, 0.4);    /* link underlines */
+  --live: #5cc98a;                         /* "active now" dot */
+  /* GitHub graph ramp: faint -> bright blossom pink */
+  --gh-0: rgba(255, 253, 247, 0.08);
+  --gh-1: #5c2e3e;
+  --gh-2: #a04a66;
+  --gh-3: #e07a98;
+  --gh-4: #ffb3c8;
+  --paper: #f4efe3;                        /* collage photo mount */
+  --petals: #ffd1dc, #f8b4c8, #f4a0ba, #ffe3ea;
 }
 
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #faf7f2;                           /* hollow-mask bone */
+  --ink: #15161a;
+  --muted: #5c5649;
+  --line: rgba(21, 22, 26, 0.14);
+  --card: rgba(21, 22, 26, 0.05);
+  --card-line: rgba(21, 22, 26, 0.12);
+  --link: #ea580c;                         /* same hair orange, darker to hold contrast on bone */
+  --link-hover: #9a3412;                   /* deeper on hover -- mirror of the dark theme's lighter */
+  --link-line: rgba(234, 88, 12, 0.4);
+  --live: #0f8a4f;
+  /* ramp inverts: faint -> deep blossom, so it reads against white */
+  --gh-0: rgba(21, 22, 26, 0.07);
+  --gh-1: #f6c9d6;
+  --gh-2: #e592ab;
+  --gh-3: #c75c82;
+  --gh-4: #8f3057;
+  --paper: #fff;
+  --petals: #f2a8bd, #e07f9d, #d4698b, #f7c3d1;
+}
+
+html { scroll-behavior: smooth; }
+
 body {
-  background-color: #FAFAF7;
-  color: #16181D;
+  position: relative;            /* anchor for the footer art in the page's bottom-right corner */
+  background-color: var(--bg);
+  color: var(--ink);
 }
 
 ::selection {
-  background-color: #0F6E5D;
-  color: #FAFAF7;
+  background-color: rgba(249, 115, 22, 0.35);
+  color: var(--ink);
 }
 
-a {
-  text-underline-offset: 3px;
-}
-
-/* Blinking terminal cursor for the signature element */
-.cursor-blink {
-  animation: blink 1.1s steps(1) infinite;
-}
-
-@keyframes blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cursor-blink {
-    animation: none;
-    opacity: 1;
-  }
-  html {
-    scroll-behavior: auto;
-  }
-}
+a { text-underline-offset: 3px; }
 
 /* Visible keyboard focus */
 a:focus-visible,
 button:focus-visible {
-  outline: 2px solid #0F6E5D;
+  outline: 2px solid var(--link);
   outline-offset: 3px;
   border-radius: 2px;
+}
+
+/* Shared utilities: anything clickable uses these */
+@layer utilities {
+  .text-link { color: var(--link); }
+  .text-link-hover { color: var(--link-hover); }
+}
+
+/* Blinking terminal cursor for the signature element */
+.cursor-blink { animation: blink 1.1s steps(1) infinite; }
+@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes flutter { from { transform: scaleX(1); } to { transform: scaleX(0.28); } }
+
+/* Maps your existing Tailwind color tokens (text-ink, border-hairline, ...) to the variables above */
+.text-ink { color: var(--ink); }
+.text-ink-soft { color: var(--muted); }
+.hover\:text-ink:hover { color: var(--ink); }
+.border-hairline { border-color: var(--line); }
+.decoration-hairline { text-decoration-color: var(--line); }
+.bg-surface, .bg-surface\/60 { background-color: var(--card); }
+.bg-paper { background-color: var(--paper); }
+
+/* Footer art: the left edge always dissolves into the page. */
+.footer-scene {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 16%);
+  mask-image: linear-gradient(to right, transparent, #000 16%);
+}
+
+/* The light panel is a touch brighter than the bone page, so its top edge reads
+   as a rectangle; a second gradient, intersected, fades it out. The dark art is
+   black on black and needs no such help. */
+:root[data-theme="light"] .footer-scene {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 16%),
+    linear-gradient(to top, #000 78%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 16%),
+    linear-gradient(to top, #000 78%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .cursor-blink { animation: none; opacity: 1; }
+  .kanye { display: none; }
 }

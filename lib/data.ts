@@ -3,38 +3,50 @@
 export const profile = {
   name: "Adarsh Singh Tomar",
   role: "AI/ML Engineer",
-  location: "Gwalior, Madhya Pradesh, India",
+  location: "Bengaluru, Karnataka, India",
+  // Used by <LocalTime /> to compute distance + time skew from the visitor.
+  homeCity: "Bengaluru",
+  homeCoords: [12.9716, 77.5946] as [number, number],
+  homeTimeZone: "Asia/Kolkata",
   // TODO: replace with your real contact details before deploying
   email: "tomaradarsh18@gmail.com",
   linkedin: "www.linkedin.com/in/adarsh-singh-tomar-46b6451bb/",
   github: "github.com/AdarshGT33",
-  bio: "I build AI/ML systems and secure backend infra around them",
+  githubUser: "AdarshGT33",
+  bio: "Started as a web developer and grew preference for backend. Now I'm building complex and challenging back-end and AI systems in production.",
 };
 
-export const currently = [
+/** Top nav. `key` is the single-letter keyboard shortcut shown in brackets. */
+export const nav = [
+  { key: "h", label: "home", href: "home" },
+  { key: "p", label: "projects", href: "projects" },
+  { key: "w", label: "work", href: "work" },
+];
+
+/** The "currently / co-founded / prev" lines under the bio. */
+export const timeline = [
   {
-    label: "Suraksha Lens",
-    detail: "Multilingual voice AI — AI/ML Consultant",
-    href: "#",
+    lead: "currently leading AI product deveolopment at",
+    org: "Suraksha Lens",
+    href: "https://www.saicjs.com/suraksha-lens-1",
+    trail: ", as AI/ML consultant",
   },
   {
-    label: "Open to work",
-    detail: "AI Engineer, AI & Agentic Workflows",
-    href: "#",
+    lead: "prev AI Creative Technologist at",
+    org: "BackkBenchers",
+    href: "https://backkbenchers.in/#",
+  },
+  {
+    lead: "prev AI Research Engineer at",
+    org: "Ekanga",
+    href: "https://www.ekanga.in/",
   },
 ];
 
-export const previously = [
-  {
-    label: "BackkBenchers",
-    detail: "AI Creative Technologist",
-    href: "#",
-  },
-  {
-    label: "Ekanga",
-    detail: "AI Research Engineer",
-    href: "#",
-  },
+// TODO: rewrite in your own words — this is a placeholder in psudokit's shape.
+export const asides = [
+  "I flourish in a high agency environment, undivided attention, I doubt doubt, and I talk to myself out loud often, awfully lot",
+  "also music/movies/sports · want to afford going to swimming.",
 ];
 
 export const projects = [
@@ -59,3 +71,26 @@ export const projects = [
   },
 ];
 
+/**
+ * The scattered wall above the GitHub graph.
+ * Drop images into public/collage/ and add entries. `tilt` is degrees —
+ * keep them small (-8..8) or the wall reads as noise.
+ */
+export type CollageItem =
+  | { kind: "photo"; src: string; alt: string; tilt: number; width: number }
+  | { kind: "note"; text: string; tilt: number; tone?: "ink" | "signal" };
+
+export const collage: CollageItem[] = [
+  { kind: "photo", src: "/collage/kobe.jpg", alt: "Kobe Bryant at the free-throw line", tilt: 4, width: 168 },
+  { kind: "photo", src: "/collage/identity.jpg", alt: "On building an identity rooted in yourself", tilt: -5, width: 170 },
+  { kind: "photo", src: "/collage/opportunities.jpg", alt: "How to see opportunities others miss", tilt: 3, width: 150 },
+  { kind: "photo", src: "/collage/tomorrow.jpg", alt: "It could all end tomorrow, or it could last another 100 years", tilt: -3, width: 160 },
+  { kind: "photo", src: "/collage/creativity.jpg", alt: "On creativity being destructive as much as constructive", tilt: 4, width: 165 },
+  { kind: "photo", src: "/collage/emotions.jpg", alt: "Not everything I feel is true", tilt: -4, width: 155 },
+  { kind: "photo", src: "/collage/discomfort.jpg", alt: "You are strong enough to face the discomfort you are avoiding", tilt: 5, width: 158 },
+  { kind: "photo", src: "/collage/philippians.jpg", alt: "Philippians 4:5-9", tilt: 2, width: 175 },
+  { kind: "photo", src: "/collage/ichigo_mog.jpg", alt: "Ichigo Kurosaki in the Bleach: Thousand-Year Blood War coat", tilt: -3, width: 150 },
+  { kind: "photo", src: "/collage/moving-man.jpg", alt: "A moving man eventually meets his luck", tilt: 4, width: 165 },
+  { kind: "photo", src: "/collage/tired-either-way.jpg", alt: "You will be tired either way — be tired from trying", tilt: -5, width: 160 },
+  { kind: "photo", src: "/collage/bleach-spread.jpg", alt: "Bleach cast colour spread", tilt: 3, width: 158 },
+];

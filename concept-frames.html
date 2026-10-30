@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Concept Frames</title>
+<style>
+  :root{ --emerald:#046A38; --emerald-dark:#03512A; --emerald-deep:#023B1F; }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#080d0a;color:#e9efe9;
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif}
+  .sheet{scroll-snap-type:y mandatory;height:100vh;overflow-y:auto}
+  .frame{scroll-snap-align:center;min-height:100vh;display:flex;flex-direction:column;
+    justify-content:center;gap:9px;padding:10px 0}
+  .holder{position:relative;width:100%;aspect-ratio:16/9;flex:0 0 auto;overflow:hidden;
+    display:grid;place-items:center;background:#0a0f0c}
+  .stage{position:absolute;inset:0}
+  .stage svg{width:100%;height:100%;display:block}
+
+  .tag{position:absolute;top:16px;left:18px;z-index:40;
+    font:600 11.5px/1 ui-monospace,Consolas,monospace;letter-spacing:.18em;
+    text-transform:uppercase;color:#d7eee0;background:rgba(3,34,19,.78);
+    border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:8px 15px}
+  .note{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;padding:0 18px}
+  .note span{font:500 11px/1.4 ui-monospace,Consolas,monospace;
+    color:#dbeedd;background:rgba(3,26,15,.76);border:1px solid rgba(255,255,255,.17);
+    border-radius:7px;padding:6px 9px}
+  .scrollhint{position:fixed;right:16px;bottom:14px;z-index:60;
+    font:600 10.5px/1 ui-monospace,monospace;letter-spacing:.16em;color:#a6cdb2;
+    background:rgba(4,24,14,.85);border:1px solid rgba(255,255,255,.2);
+    border-radius:999px;padding:8px 13px}
+
+  .cloudbelt{animation:drift 150s linear infinite}
+  .cloudbelt.b{animation-duration:230s;opacity:.9}
+  @keyframes drift{from{transform:translateX(0)}to{transform:translateX(-1600px)}}
+  .tuft{transform-box:fill-box;transform-origin:bottom center;
+    animation:sway 3.6s ease-in-out infinite alternate}
+  @keyframes sway{from{transform:rotate(-5deg)}to{transform:rotate(6deg)}}
+  .bird{animation:fly 52s linear infinite}
+  @keyframes fly{from{transform:translate(-220px,40px)}to{transform:translate(1780px,-70px)}}
+  .glint{animation:glint 7s ease-in-out infinite alternate}
+  @keyframes glint{from{opacity:.16}to{opacity:.4}}
+
+  .bg-blur{position:absolute;inset:-36px;z-index:1;
+    filter:blur(12px) saturate(1.05) brightness(.82);transform:scale(1.06)}
+  .bg-blur svg{width:100%;height:100%}
+  .shade{position:absolute;inset:0;z-index:2;
+    background:radial-gradient(130% 95% at 50% 45%,rgba(2,18,10,.08),rgba(2,12,7,.66))}
+
+  /* the section board — the cyclist rides along its top edge */
+  .board-wrap{position:relative;z-index:20;width:min(600px,70%)}
+  .rider{position:absolute;top:-51px;left:-60vw;z-index:22;
+    animation:ride 13s linear infinite;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45))}
+  .rider.rev{animation-duration:15s}
+  @keyframes ride{from{left:-60vw}to{left:110vw}}
+
+  .card{border-radius:14px;overflow:hidden;box-shadow:0 22px 52px rgba(0,0,0,.6);
+    border:1px solid rgba(255,255,255,.18);position:relative}
+  .card-head{background:var(--emerald-dark);display:flex;align-items:center;gap:8px;
+    padding:0 12px;height:52px;border-bottom:3px solid rgba(255,255,255,.92)}
+  .card-title{flex:1;text-align:center;color:#fff;font-size:21px;font-weight:600;letter-spacing:.05em}
+  .iconbtn{width:29px;height:29px;border-radius:8px;border:2px solid rgba(255,255,255,.85);
+    background:transparent;color:#fff;display:grid;place-items:center;cursor:pointer;
+    font:700 11px/1 ui-monospace,monospace;flex:none}
+  .iconbtn svg{width:15px;height:15px;fill:#fff}
+  .menubtn i{display:block;width:14px;height:2px;background:#fff;box-shadow:0 4px #fff,0 -4px #fff}
+  .card-body{background:var(--emerald);color:#fff;padding:20px 24px 24px;
+    height:min(30vh,186px);overflow-y:auto;line-height:1.6;font-size:13.5px}
+  .card-body::-webkit-scrollbar{width:8px}
+  .card-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.6);border-radius:8px}
+  .card-body::-webkit-scrollbar-track{background:rgba(255,255,255,.15)}
+  .card-body h3{margin:16px 0 5px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    color:#b7e3c6;font-weight:700}
+  .card-body h3:first-child{margin-top:0}
+  .card-body p{margin:0 0 9px;color:#eaf6ee}
+  .card-body ul{margin:0;padding-left:16px;color:#eaf6ee}
+  .card-body li{margin-bottom:5px}
+
+  .arrow{position:absolute;top:56%;z-index:30;transform:translateY(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:6px}
+  .arrow.l{left:-72px}.arrow.r{right:-72px}
+  .arrow button{width:44px;height:44px;border-radius:50%;cursor:pointer;
+    background:rgba(3,60,32,.85);border:2px solid rgba(255,255,255,.92);color:#fff;
+    font-size:19px;display:grid;place-items:center}
+  .arrow small{font:600 9.5px/1 ui-monospace,monospace;letter-spacing:.12em;
+    text-transform:uppercase;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.85)}
+
+  .jump{position:absolute;right:10px;top:56px;z-index:35;width:206px;
+    background:var(--emerald-deep);border:2px solid rgba(255,255,255,.9);border-radius:11px;
+    padding:6px;box-shadow:0 16px 36px rgba(0,0,0,.65)}
+  .jump b{display:block;font:700 9px/1 ui-monospace,monospace;letter-spacing:.2em;
+    color:#9ed4b2;padding:7px 9px 8px}
+  .jump a{display:block;color:#fff;text-decoration:none;padding:7px 9px;
+    border-radius:6px;font-size:13px}
+  .jump a:hover{background:rgba(255,255,255,.15)}
+
+  .field{margin-bottom:10px}
+  .field label{display:block;font:600 9.5px/1 ui-monospace,monospace;letter-spacing:.16em;
+    text-transform:uppercase;color:#b7e3c6;margin-bottom:5px}
+  .field input,.field textarea{width:100%;background:rgba(255,255,255,.96);border:0;
+    border-radius:6px;padding:9px 10px;font:13px/1.4 inherit;color:#0f2417}
+  .field textarea{height:76px;resize:none}
+  .send button{margin-top:4px;background:#fff;color:#04401f;border:0;border-radius:7px;
+    padding:10px 24px;font:700 12.5px/1 inherit;letter-spacing:.05em;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <section class="frame"><div class="holder">
+    <div class="stage" data-scene="full"></div>
+    <div class="tag">Frame 01 &nbsp;·&nbsp; Landing — first person</div>
+  </div>
+  <div class="note">
+    <span>clouds drift · grass sways (live)</span>
+    <span>concrete road, dirt trail, then the fence</span>
+    <span>rocky-green massif left · Lake Como right</span>
+    <span>emerald board, white type, hollow arrows, no distances</span>
+  </div></section>
+
+  <section class="frame"><div class="holder">
+    <div class="stage" data-scene="side"></div>
+    <div class="tag">Frame 02 &nbsp;·&nbsp; Transition — camera drops to third person</div>
+  </div>
+  <div class="note">
+    <span>fires on any board row click</span>
+    <span>cyclist crosses → exits frame → the section board wipes in behind him</span>
+    <span>~1.4 s, identical every time</span>
+  </div></section>
+
+  <section class="frame"><div class="holder">
+    <div class="bg-blur" data-scene="full"></div><div class="shade"></div>
+    <div class="board-wrap">
+      <div class="rider" data-rider></div>
+      <div class="card">
+        <div class="card-head">
+          <div style="width:29px"></div>
+          <div class="card-title">About me</div>
+          <button class="iconbtn menubtn"><i></i></button>
+        </div>
+        <div class="card-body">
+          <h3>Who</h3>
+          <p>Adarsh Singh Tomar — AI/ML Engineer, based in Gwalior, Madhya Pradesh, India.
+             I build AI/ML systems and the secure backend infra around them.</p>
+          <h3>Currently</h3>
+          <ul>
+            <li><b>Suraksha Lens</b> — multilingual voice AI · AI/ML Consultant</li>
+            <li><b>Open to work</b> — AI Engineer, AI &amp; agentic workflows</li>
+          </ul>
+          <h3>How I work</h3>
+          <p>Ship the smallest thing that holds, measure it, then make it boring enough to run
+             unattended. Most of my work sits where models meet real infrastructure: queues,
+             auth, storage, latency budgets.</p>
+          <h3>Off the clock</h3>
+          <p>Cycling, and an unreasonable amount of Kanye.</p>
+          <p style="opacity:.55">(placeholder copy — the board scrolls when the content runs long)</p>
+        </div>
+      </div>
+      <div class="arrow l"><button>‹</button><small>Home</small></div>
+      <div class="arrow r"><button>›</button><small>Experience</small></div>
+    </div>
+    <div class="tag">Frame 03 &nbsp;·&nbsp; Section board — About me</div>
+  </div>
+  <div class="note">
+    <span>same emerald + white type as the road sign</span>
+    <span>cyclist rides the top edge of the board itself — off right, back on from the left</span>
+    <span>scenery stays behind, blurred</span>
+    <span>‹ › walk the order: About → Experience → Skills → Projects → Resume → Contact</span>
+  </div></section>
+
+  <section class="frame"><div class="holder">
+    <div class="bg-blur" data-scene="full"></div><div class="shade"></div>
+    <div class="board-wrap">
+      <div class="rider rev" data-rider></div>
+      <div class="card">
+        <div class="card-head">
+          <button class="iconbtn" title="LinkedIn">in</button>
+          <button class="iconbtn" title="GitHub"><svg viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14 0 1.55-.01 2.8-.01 3.18 0 .31.21.68.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5z"/></svg></button>
+          <button class="iconbtn" title="Email">✉</button>
+          <div class="card-title">Contact me</div>
+          <button class="iconbtn menubtn"><i></i></button>
+        </div>
+        <div class="jump">
+          <b>Jump to</b>
+          <a href="#">Home</a><a href="#">About me</a><a href="#">Experience</a>
+          <a href="#">Skills</a><a href="#">Projects</a><a href="#">Resume</a>
+        </div>
+        <div class="card-body">
+          <div class="field"><label>Name</label><input placeholder="Your name"></div>
+          <div class="field"><label>Email</label><input placeholder="so I can reply"></div>
+          <div class="field"><label>Subject (optional)</label><input placeholder="What's this about"></div>
+          <div class="field"><label>Message</label><textarea placeholder="Say hello…"></textarea></div>
+          <div class="send"><button>Send</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="tag">Frame 04 &nbsp;·&nbsp; Contact me + jump menu open</div>
+  </div>
+  <div class="note">
+    <span>menu lists every section except the one you're on</span>
+    <span>form posts → mail lands in your inbox</span>
+    <span>LinkedIn · GitHub · direct mail in the header</span>
+  </div></section>
+</div>
+<div class="scrollhint">scroll ↓ 4 frames</div>
+
+<script>
+/* ============================================================
+   1. PERSPECTIVE
+   ============================================================ */
+const VPX=760, VPY=470, C=430, ROADW=276;
+const TRAIL_A=384, TRAIL_B=476, FENCE=534, LIP=596;   // lateral offsets, road edge outward
+const yz = z => VPY + C/z;
+const xz = (lat,z) => VPX + lat/z;
+const rng = s => { let a=s>>>0; return ()=>{ a=a+0x6D2B79F5|0;
+  let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t;
+  return ((t^t>>>14)>>>0)/4294967296; }; };
+
+function groundPts(lat,zMax=60){
+  const p=[[xz(lat,1),yz(1)]];
+  for(let z=1.18; z<zMax; z*=1.28) p.push([xz(lat,z),yz(z)]);
+  p.push([VPX,VPY]);
+  return p;
+}
+const L = p => p.map(([x,y])=>`L ${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+const groundLine = (lat,zMax=60) => 'M'+L(groundPts(lat,zMax)).slice(1);
+const band = (a,b) => `M ${xz(a,1).toFixed(1)},900 ${L(groundPts(a).slice(1))}
+                       ${L(groundPts(b).reverse())} Z`;
+
+/* ============================================================
+   2. PROCEDURAL MOUNTAINS
+   ============================================================ */
+let uid=0;
+function ridgePts(x0,x1,yTop,drop,amp,steps,rand){
+  const p=[];
+  for(let i=0;i<=steps;i++){
+    const u=i/steps, x=x0+(x1-x0)*u;
+    let y=yTop+drop*Math.pow(u,1.4);
+    y += (i%2) ? amp*0.42*rand() : -amp*(0.4+0.6*rand());
+    p.push([x,y]);
+  }
+  for(let i=1;i<p.length-1;i++) p[i][1]=(p[i-1][1]+p[i][1]*2.4+p[i+1][1])/4.4;
+  return p;
+}
+const poly = p => p.map(([x,y])=>`${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+const shift = (p,d,v,rand) => p.map(([x,y])=>[x, y+d+(rand()-.5)*v]);
+
+function mountain(o){
+  const rand = rng(o.seed), id = 'm'+(++uid);
+  const pts = ridgePts(o.x0,o.x1,o.yTop,o.drop,o.amp,o.steps||11,rand);
+  const base = o.base ?? 480, far = o.far || 0;
+  const body = `${o.x0},${base} ${poly(pts)} ${o.x1},${base}`;
+
+  let rock='';
+  for(const b of o.bands||[]){
+    const top = shift(pts,b[0],b[2]||26,rand), bot = shift(pts,b[1],b[2]||26,rand);
+    const a=b[3]??0, z=b[4]??pts.length-1;
+    rock += `<polygon points="${poly(top.slice(a,z+1))} ${poly(bot.slice(a,z+1).reverse())}"
+             fill="url(#rockG)" opacity=".82"/>`;
+    for(let k=1;k<=2;k++){
+      const ln = shift(pts, b[0]+(b[1]-b[0])*k/3, 9, rand).slice(a,z+1);
+      rock += `<polyline points="${poly(ln)}" fill="none" stroke="#3b4034"
+               stroke-width="${3.2-k*0.7}" opacity=".55"/>
+               <polyline points="${poly(shift(ln,-3,3,rand))}" fill="none" stroke="#c3c7bc"
+               stroke-width="1.4" opacity=".32"/>`;
+    }
+  }
+  /* shaded flank: every second face gets a dark wedge, so the ridge has volume */
+  let flank='';
+  for(let i=0;i<pts.length-1;i++){
+    if(pts[i+1][1] < pts[i][1]) continue;             // only faces turning away
+    flank += `<polygon points="${poly([pts[i],pts[i+1],[pts[i+1][0],base],[pts[i][0],base]])}"
+              fill="#03200a" opacity=".24"/>`;
+  }
+  let tongue='';
+  for(let i=0;i<(o.tongues||0);i++){
+    const j=1+Math.floor(rand()*(pts.length-2)), [x,y]=pts[j];
+    const w=22+rand()*40, h=70+rand()*150;
+    tongue+=`<path d="M${(x-w).toFixed(0)},${(y+10).toFixed(0)}
+              Q${x.toFixed(0)},${(y+h*.5).toFixed(0)} ${(x-w*.3).toFixed(0)},${(y+h).toFixed(0)}
+              Q${(x+w*.2).toFixed(0)},${(y+h*.6).toFixed(0)} ${(x+w).toFixed(0)},${(y+14).toFixed(0)} Z"
+              fill="${o.green2}" opacity=".95"/>`;
+  }
+  let trees='';
+  for(let i=0;i<(o.trees||0);i++){
+    const j=1+Math.floor(rand()*(pts.length-2));
+    const x=pts[j][0]+(rand()-.5)*70, y=pts[j][1]+30+rand()*130, s=(6+rand()*7)*(1-far*.4);
+    trees+=`<path d="M${x.toFixed(0)},${y.toFixed(0)} l${s.toFixed(1)},${(s*2.6).toFixed(1)}
+             h${(-s*2).toFixed(1)} z" fill="#153a10" opacity=".9"/>`;
+  }
+  return `
+  <g>
+    <clipPath id="${id}"><polygon points="${body}"/></clipPath>
+    <g clip-path="url(#${id})">
+      <polygon points="${body}" fill="${o.green}"/>
+      ${flank}
+      ${rock}
+      ${tongue}
+      <polygon points="${poly(pts)} ${poly(shift(pts,34,22,rand).reverse())}"
+               fill="${o.green2}" opacity=".92"/>
+      ${trees}
+      <rect x="${o.x0}" y="${base-90}" width="${o.x1-o.x0}" height="90" fill="url(#footShade)"/>
+      <rect x="${o.x0}" y="0" width="${o.x1-o.x0}" height="${base}" fill="url(#sunSide)"/>
+      ${far?`<rect x="${o.x0}" y="0" width="${o.x1-o.x0}" height="${base}"
+              fill="#bcd8e6" opacity="${far}"/>`:''}
+    </g>
+    <polyline points="${poly(pts)}" fill="none" stroke="#17400f" stroke-width="1.8" opacity=".55"/>
+  </g>`;
+}
+
+/* ============================================================
+   3. LAKE COMO — the right-hand side
+   ============================================================ */
+const SHORE = [[796,488],[900,482],[1010,490],[1130,482],[1250,490],[1380,482],[1500,489],[1600,484]];
+const BANK  = [[788,478],[880,520],[1000,596],[1140,692],[1300,782],[1450,838],[1600,878]];
+
+function lakeMountains(){
+  return `
+    ${mountain({x0:660,x1:1760,yTop:168,drop:56,amp:150,steps:12,seed:141,base:492,
+      green:'#3a7a48',green2:'#4d9459',bands:[[8,62,30],[150,206,34,2,9]],tongues:3,trees:5,far:.3})}
+    ${mountain({x0:700,x1:1760,yTop:258,drop:60,amp:118,steps:10,seed:97,base:492,
+      green:'#2f6b3c',green2:'#42884c',bands:[[8,54,26],[128,176,30,1,7]],tongues:4,trees:6,far:.15})}`;
+}
+function lakeComo(){
+  const rand = rng(1606);
+  /* far shore villages: cream walls, terracotta roofs, one campanile */
+  let town='', refl='';
+  for(const [cx,n,tower] of [[930,7,1],[1180,6,0],[1420,8,1],[1560,4,0]]){
+    for(let i=0;i<n;i++){
+      const x=cx+(i-n/2)*17+rand()*6, w=9+rand()*7, h=8+rand()*8;
+      const y=486-h;
+      town+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}"
+             height="${h.toFixed(1)}" fill="#efe0c6"/>
+             <path d="M${(x-1.6).toFixed(1)},${y.toFixed(1)} L${(x+w/2).toFixed(1)},${(y-4.5).toFixed(1)}
+             L${(x+w+1.6).toFixed(1)},${y.toFixed(1)} Z" fill="#b4533a"/>`;
+      refl+=`<rect x="${x.toFixed(1)}" y="488" width="${w.toFixed(1)}"
+             height="${(h*1.5).toFixed(1)}" fill="#e2cfae" opacity=".2"/>`;
+    }
+    if(tower){
+      town+=`<rect x="${cx.toFixed(1)}" y="458" width="7" height="28" fill="#f3e6cd"/>
+             <path d="M${(cx-1.5).toFixed(1)},458 L${(cx+3.5).toFixed(1)},450
+                      L${(cx+8.5).toFixed(1)},458 Z" fill="#a84d36"/>`;
+      refl+=`<rect x="${cx.toFixed(1)}" y="488" width="7" height="34" fill="#e7d8ba" opacity=".22"/>`;
+    }
+  }
+  /* ripple bands: tight at the far shore, wide and soft near the camera */
+  let ripple='';
+  for(let i=0, y=500; y<900; i++){
+    const step = 5 + i*1.5;
+    ripple+=`<line x1="${(700+i*2)}" y1="${y.toFixed(1)}" x2="1600" y2="${(y-3).toFixed(1)}"
+             stroke="#cfe9f2" stroke-width="${Math.min(2.6,.7+i*.12).toFixed(2)}"
+             opacity="${(0.1+Math.min(.2,i*.012)).toFixed(3)}"/>`;
+    y+=step;
+  }
+  /* boats + wakes */
+  const boat=(x,y,s)=>`<g transform="translate(${x} ${y}) scale(${s})">
+      <path d="M-9,0 L9,0 L6,4 L-6,4 Z" fill="#f4f1e8"/>
+      <path d="M0,0 L0,-11 L8,-2 Z" fill="#ffffff" opacity=".95"/>
+      <path d="M-26,7 L0,3 L26,7" fill="none" stroke="#dff0f6" stroke-width="1.6" opacity=".55"/></g>`;
+  return `
+    ${town}
+    <!-- the water -->
+    <path d="M ${SHORE[0][0]},${SHORE[0][1]} ${L(SHORE.slice(1))} L 1600,884
+             ${L(BANK.slice().reverse())} Z" fill="url(#lakeG)"/>
+    <g clip-path="url(#lakeclip)">
+      ${refl}
+      <path d="M770,488 L1600,488 L1600,560 L770,536 Z" fill="#1d4a4e" opacity=".3"/>
+      ${ripple}
+      <polygon points="1214,488 1264,488 1600,876 1352,886" fill="#ffffff" opacity=".15" class="glint"/>
+      ${boat(1130,606,1)}${boat(1396,712,1.35)}
+      <path d="${'M '+BANK.map(([x,y])=>`${x},${y}`).join(' L ')}" fill="none"
+            stroke="#06211f" stroke-width="26" opacity=".45" filter="url(#soft)"/>
+    </g>
+    <!-- the wooded bank dropping from the fence to the waterline -->
+    <path d="M ${BANK[0][0]},${BANK[0][1]} ${L(BANK.slice(1))} L 1600,900
+             L ${xz(LIP,1).toFixed(1)},900 ${L(groundPts(LIP).slice(0,-1).reverse())} Z"
+          fill="url(#bankWood)"/>
+    <g opacity=".95">
+      ${[[840,516,9],[900,548,12],[975,592,15],[1060,644,18],[1150,704,21],[1260,764,25],
+         [1380,820,28],[1500,856,30]].map(([x,y,r])=>
+        `<ellipse cx="${x}" cy="${y}" rx="${r*1.25}" ry="${r*.8}" fill="#1c4a1c"/>
+         <ellipse cx="${x-r*.4}" cy="${y-r*.3}" rx="${r*.7}" ry="${r*.5}" fill="#2d6a26"/>`).join('')}
+      ${[[870,518,14],[1020,612,20],[1210,726,26],[1430,830,30]].map(([x,y,h])=>
+        `<ellipse cx="${x}" cy="${y-h}" rx="${(h*.3).toFixed(1)}" ry="${h}" fill="#143c17"/>`).join('')}
+    </g>
+    <path d="${groundLine(LIP)}" fill="none" stroke="#2a4a1c" stroke-width="5" opacity=".7"/>`;
+}
+
+/* ============================================================
+   4. GROUND, ROAD, FENCE, SIGN
+   ============================================================ */
+function clouds(){
+  return [[80,118,1.5,.97],[430,70,1,.9],[700,148,1.25,.95],
+          [1010,82,1.7,1],[1320,138,1.05,.88],[1560,94,1.35,.93]]
+    .map(([x,y,s,a])=>`<use href="#cloud" transform="translate(${x} ${y}) scale(${s})" opacity="${a}"/>`)
+    .join('');
+}
+function fence(){
+  let posts='', shadow='', top=[], mid=[];
+  for(let z=1.0; z<34; z*=1.235){
+    const x=xz(FENCE,z), yb=yz(z), h=166/z, w=Math.max(1.1,19/z);
+    shadow+=`<path d="M${(x-w/2).toFixed(1)},${yb.toFixed(1)} l${(-h*.5).toFixed(1)},${(h*.16).toFixed(1)}
+             l${w.toFixed(1)},0 l${(h*.5).toFixed(1)},${(-h*.16).toFixed(1)} Z"
+             fill="#123a0c" opacity=".3"/>`;
+    posts+=`<rect x="${(x-w/2).toFixed(1)}" y="${(yb-h).toFixed(1)}" width="${w.toFixed(1)}"
+            height="${h.toFixed(1)}" fill="#6b5436"/>
+            <rect x="${(x-w/2).toFixed(1)}" y="${(yb-h).toFixed(1)}" width="${(w*.38).toFixed(1)}"
+            height="${h.toFixed(1)}" fill="#a2865c"/>`;
+    top.push(`${x.toFixed(1)},${(yb-h*.93).toFixed(1)}`);
+    mid.push(`${x.toFixed(1)},${(yb-h*.5).toFixed(1)}`);
+  }
+  const rail=(p,w,c)=>`<polyline points="${p.join(' ')}" fill="none" stroke="${c}"
+    stroke-width="${w}" stroke-linecap="round"/>`;
+  return shadow+posts+rail(top,4.6,'#8c6f4c')+rail(top,1.6,'#b59a70')+rail(mid,3.8,'#8c6f4c');
+}
+function roadSeams(){
+  let o='';
+  for(let z=1.05; z<26; z*=1.26){
+    const y=yz(z);
+    o+=`<line x1="${xz(-ROADW,z).toFixed(1)}" y1="${y.toFixed(1)}"
+         x2="${xz(ROADW,z).toFixed(1)}" y2="${y.toFixed(1)}"
+         stroke="#9c9d98" stroke-width="${Math.max(.5,2.6/z).toFixed(2)}" opacity=".8"/>`;
+  }
+  return o;
+}
+function leftBank(){
+  const rand=rng(404); const top=[], rocks=[], bushes=[];
+  for(let z=1; z<46; z*=1.22){
+    const x=xz(-430,z), y=yz(z)-(336+(rand()-.5)*120)/z;
+    top.push([x,y]);
+    if(z<20 && rand()>.35){
+      const b=32/z+5, by=y+b*1.7+rand()*46/z;
+      bushes.push(`<ellipse cx="${(x+40/z).toFixed(1)}" cy="${by.toFixed(1)}"
+        rx="${(b*1.15).toFixed(1)}" ry="${(b*.72).toFixed(1)}" fill="#1b5014"/>
+        <ellipse cx="${(x+40/z-b*.3).toFixed(1)}" cy="${(by-b*.3).toFixed(1)}"
+        rx="${(b*.62).toFixed(1)}" ry="${(b*.42).toFixed(1)}" fill="#3d8a2b"/>`);
+    }
+    if(z>1.2 && z<16 && rand()>.3){
+      const s=54/z+5;
+      rocks.push(`<path d="M${(x+6).toFixed(1)},${(y+s*.7).toFixed(1)}
+        l${s.toFixed(1)},${(-s*1.1).toFixed(1)} l${(s*1.2).toFixed(1)},${(s*1.2).toFixed(1)} z"
+        fill="#8a9082"/><path d="M${(x+6+s).toFixed(1)},${(y-s*.4).toFixed(1)}
+        l${(s*.6).toFixed(1)},${(s*.6).toFixed(1)} l${(-s*.5).toFixed(1)},${(s*.2).toFixed(1)} z"
+        fill="#b9bdb2"/>`);
+    }
+  }
+  const crest=[[-60,top[0][1]],...top,[VPX,VPY]], roadEdge=groundPts(-ROADW).reverse();
+  return `<path d="M -60,900 ${L(crest)} ${L(roadEdge)} L ${xz(-ROADW,1).toFixed(1)},900 Z"
+      fill="url(#bankG)"/>
+    ${rocks.join('')}
+    <path d="M -60,${top[0][1].toFixed(1)} ${L(top)} L ${VPX},${VPY}" fill="none"
+      stroke="#1f4f14" stroke-width="2.8" opacity=".55"/>
+    <path d="M -60,${(top[0][1]-5).toFixed(1)} ${L(top.map(([x,y])=>[x,y-5]))} L ${VPX},${VPY}"
+      fill="none" stroke="#7fc94e" stroke-width="5" opacity=".5"/>
+    <path d="M -60,${(top[0][1]+46).toFixed(1)} ${L(top.map(([x,y])=>[x,y+46]))} L ${VPX},${VPY}"
+      fill="none" stroke="#05230a" stroke-width="36" opacity=".26" filter="url(#soft)"/>
+    ${bushes.join('')}
+    <path d="${groundLine(-ROADW-14)}" fill="none" stroke="#0f3a08" stroke-width="18" opacity=".34"/>`;
+}
+function tufts(dy=0){
+  const seed=[[92,884,1],[252,848,.9],[62,802,.8],[302,906,1.1],[182,930,1.2],
+              [1196,884,1.05],[1330,930,1.2],[1138,836,.85],[1416,874,1],[1264,804,.72],
+              [980,700,.5],[1050,742,.6],[432,762,.62],[520,714,.5]];
+  return seed.map(([x,y,s])=>`<g class="tuft" style="animation-delay:${(x%7)*.31}s"
+      transform="translate(${x} ${Math.min(898,y+dy)}) scale(${s})">
+      <path d="M0,0 C-3,-16 -9,-22 -13,-30 C-5,-25 -2,-16 0,-8 C2,-17 6,-25 13,-31
+               C8,-21 3,-15 0,0 Z" fill="#245b16"/>
+      <path d="M0,0 C0,-12 3,-20 8,-27 C5,-17 3,-9 2,0 Z" fill="#489127"/></g>`).join('');
+}
+
+const ROWS=['About me','Experience','Skills','Projects','Resume','Contact me'];
+function signboard(){
+  const X=84, Y=244, W=474, H=396, y0=304, step=58;
+  let rows='';
+  ROWS.forEach((label,i)=>{
+    const y=y0+i*step;
+    rows+=`<text x="${X+44}" y="${y}" class="sg">${label}</text>
+           <path d="M${X+W-92},${y-13} l21,13 l-21,13 Z" fill="none" stroke="#fff"
+                 stroke-width="2.6" stroke-linejoin="round"/>`;
+    if(i<ROWS.length-1)
+      rows+=`<line x1="${X+40}" y1="${y+17}" x2="${X+W-40}" y2="${y+17}"
+             stroke="#fff" stroke-width="1.3" opacity=".28"/>`;
+  });
+  return `<g>
+    <ellipse cx="${X+W/2-70}" cy="822" rx="228" ry="24" fill="#0d3508" opacity=".34"/>
+    <rect x="${X+86}"   y="${Y+H-10}" width="24" height="182" fill="#6d7377"/>
+    <rect x="${X+86}"   y="${Y+H-10}" width="8"  height="182" fill="#9ea5a9"/>
+    <rect x="${X+W-110}" y="${Y+H-10}" width="24" height="182" fill="#6d7377"/>
+    <rect x="${X+W-110}" y="${Y+H-10}" width="8"  height="182" fill="#9ea5a9"/>
+    <rect x="${X-14}" y="${Y+8}" width="${W+14}" height="${H+14}" rx="20" fill="#02240f" opacity=".4"/>
+    <rect x="${X-7}" y="${Y-7}" width="${W+14}" height="${H+14}" rx="20" fill="#02361C"/>
+    <rect x="${X}" y="${Y}" width="${W}" height="${H}" rx="16" fill="#046A38"/>
+    <rect x="${X}" y="${Y}" width="${W}" height="${H}" rx="16" fill="url(#signSheen)"/>
+    <rect x="${X+20}" y="${Y+20}" width="${W-40}" height="${H-40}" rx="9"
+          fill="none" stroke="#fff" stroke-width="4.5"/>
+    ${rows}</g>`;
+}
+
+const DEFS=`<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#1c7fd6"/><stop offset=".5" stop-color="#5cb4ea"/>
+    <stop offset="1" stop-color="#c6e9f8"/></linearGradient>
+  <linearGradient id="rockG" x1="0" y1="0" x2=".4" y2="1">
+    <stop offset="0" stop-color="#9aa094"/><stop offset=".55" stop-color="#6f7568"/>
+    <stop offset="1" stop-color="#474d42"/></linearGradient>
+  <linearGradient id="sunSide" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#021a06" stop-opacity=".5"/>
+    <stop offset=".55" stop-color="#021a06" stop-opacity="0"/>
+    <stop offset="1" stop-color="#fff4bc" stop-opacity=".2"/></linearGradient>
+  <linearGradient id="footShade" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#03200a" stop-opacity="0"/>
+    <stop offset="1" stop-color="#03200a" stop-opacity=".54"/></linearGradient>
+  <linearGradient id="road" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#aeafab"/><stop offset=".4" stop-color="#c8c9c5"/>
+    <stop offset="1" stop-color="#a6a7a3"/></linearGradient>
+  <linearGradient id="dirt" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#9c7c52"/><stop offset="1" stop-color="#7d6242"/></linearGradient>
+  <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#6cb541"/><stop offset="1" stop-color="#3d8f26"/></linearGradient>
+  <linearGradient id="bankG" x1="0" y1="0" x2=".3" y2="1">
+    <stop offset="0" stop-color="#3f8a24"/><stop offset="1" stop-color="#15490d"/></linearGradient>
+  <linearGradient id="bankWood" x1="0" y1="0" x2=".2" y2="1">
+    <stop offset="0" stop-color="#2f6b26"/><stop offset="1" stop-color="#11330f"/></linearGradient>
+  <linearGradient id="lakeG" x1="0" y1="0" x2=".15" y2="1">
+    <stop offset="0" stop-color="#4d94ab"/><stop offset=".32" stop-color="#2b7a98"/>
+    <stop offset="1" stop-color="#123f5c"/></linearGradient>
+  <linearGradient id="signSheen" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".16"/>
+    <stop offset=".45" stop-color="#fff" stop-opacity="0"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".16"/></linearGradient>
+  <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur stdDeviation="9"/></filter>
+  <clipPath id="lakeclip"><path d="M ${SHORE[0][0]},${SHORE[0][1]} ${L(SHORE.slice(1))}
+    L 1600,884 ${L(BANK.slice().reverse())} Z"/></clipPath>
+  <g id="cloud">
+    <g fill="#c7dded"><ellipse cx="62" cy="46" rx="62" ry="17"/>
+      <circle cx="30" cy="40" r="20"/><circle cx="64" cy="30" r="27"/><circle cx="98" cy="40" r="21"/></g>
+    <g fill="#fff"><ellipse cx="62" cy="40" rx="60" ry="16"/>
+      <circle cx="30" cy="33" r="20"/><circle cx="64" cy="22" r="27"/><circle cx="98" cy="33" r="21"/></g>
+  </g>
+  <style>.sg{font-family:"Archivo Narrow","Oswald","Segoe UI",system-ui,sans-serif;
+    fill:#fff;font-size:33px;letter-spacing:.02em}</style>
+</defs>`;
+
+function sceneFull(){
+  return `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet">${DEFS}
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <g class="cloudbelt">${clouds()}</g>
+  <g class="cloudbelt b" transform="translate(1600 0)">${clouds()}</g>
+  <g class="bird" fill="none" stroke="#33454d" stroke-width="2.2" opacity=".5">
+    <path d="M0,0 q7,-7 14,0 q7,-7 14,0"/><path d="M42,26 q6,-6 12,0 q6,-6 12,0"/></g>
+
+  ${lakeMountains()}
+
+  <!-- left massif: three layers walking toward the camera -->
+  ${mountain({x0:-80,x1:1010,yTop:140,drop:318,amp:190,steps:11,seed:31,base:474,
+    green:'#4a8a34',green2:'#63a844',bands:[[10,86,34],[188,258,40,2,8]],tongues:4,trees:5,far:.28})}
+  ${mountain({x0:-80,x1:800,yTop:236,drop:228,amp:164,steps:10,seed:77,base:474,
+    green:'#3c7b26',green2:'#55993a',bands:[[8,74,30],[150,226,36,1,6],[300,352,26,3,7]],
+    tongues:5,trees:6,far:.13})}
+  ${mountain({x0:-80,x1:620,yTop:300,drop:214,amp:118,steps:9,seed:5,base:712,
+    green:'#2c6418',green2:'#42892a',bands:[[8,62,26],[128,186,30,0,5]],tongues:4,trees:4})}
+
+  <rect x="0" y="470" width="1600" height="430" fill="url(#grass)"/>
+  ${lakeComo()}
+  ${leftBank()}
+
+  <!-- dirt trail between the road and the fence -->
+  <path d="${band(TRAIL_A,TRAIL_B)}" fill="url(#dirt)"/>
+  <path d="${groundLine(TRAIL_A)}" fill="none" stroke="#3d6b22" stroke-width="5" opacity=".5"/>
+  <path d="${groundLine(TRAIL_B)}" fill="none" stroke="#3d6b22" stroke-width="5" opacity=".5"/>
+  <path d="${groundLine((TRAIL_A+TRAIL_B)/2)}" fill="none" stroke="#b49468"
+        stroke-width="3" opacity=".45" stroke-dasharray="26 18"/>
+
+  <!-- road -->
+  <path d="M ${xz(-ROADW,1).toFixed(1)},900 L ${xz(-ROADW,60).toFixed(1)},${yz(60).toFixed(1)}
+           L ${xz(ROADW,60).toFixed(1)},${yz(60).toFixed(1)} L ${xz(ROADW,1).toFixed(1)},900 Z"
+        fill="url(#road)"/>
+  <g opacity=".16">
+    <ellipse cx="640" cy="820" rx="120" ry="26" fill="#9fa19c"/>
+    <ellipse cx="880" cy="700" rx="80" ry="16" fill="#9fa19c"/>
+    <ellipse cx="720" cy="590" rx="46" ry="9" fill="#9fa19c"/>
+  </g>
+  ${roadSeams()}
+  <path d="${groundLine(-ROADW)}" fill="none" stroke="#8b8d87" stroke-width="3"/>
+  <path d="${groundLine(ROADW)}"  fill="none" stroke="#8b8d87" stroke-width="3"/>
+
+  ${fence()}
+  ${tufts()}
+  ${signboard()}
+  <g opacity=".9">
+    <circle cx="120" cy="896" r="4" fill="#ffe94f"/><circle cx="292" cy="866" r="3.5" fill="#f4f7fa"/>
+    <circle cx="1186" cy="884" r="4" fill="#ffe94f"/><circle cx="1322" cy="852" r="3.5" fill="#ffaed4"/>
+  </g></svg>`;
+}
+
+function sceneSide(){
+  return `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet">${DEFS}
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <g class="cloudbelt">${clouds()}</g>
+  <g class="cloudbelt b" transform="translate(1600 0)">${clouds()}</g>
+  ${mountain({x0:-60,x1:1660,yTop:410,drop:0,amp:86,steps:15,seed:12,base:566,
+    green:'#43815a',green2:'#549162',bands:[[14,56,22]],tongues:0,trees:0,far:.42})}
+  ${mountain({x0:-60,x1:1660,yTop:340,drop:0,amp:122,steps:13,seed:44,base:566,
+    green:'#3e7f28',green2:'#55a035',bands:[[10,66,48],[176,232,54,3,9]],tongues:7,trees:9,far:.12})}
+
+  <rect x="0" y="552" width="1600" height="92" fill="#4a9430"/>
+  <rect x="0" y="618" width="1600" height="26" fill="#0f3a08" opacity=".26"/>
+  ${Array.from({length:22},(_,i)=>{const x=i*76+18;
+    return `<path d="M${x},624 l-26,9 l12,0 l26,-9 Z" fill="#123a0c" opacity=".32"/>
+            <rect x="${x}" y="558" width="12" height="66" fill="#6b5436"/>
+            <rect x="${x}" y="560" width="4.5" height="64" fill="#a2865c"/>`}).join('')}
+  <rect x="0" y="570" width="1600" height="6" fill="#8c6f4c"/>
+  <rect x="0" y="598" width="1600" height="5.5" fill="#8c6f4c"/>
+  <rect x="0" y="642" width="1600" height="26" fill="#9c7c52"/>
+  <rect x="0" y="668" width="1600" height="176" fill="url(#road)"/>
+  <rect x="0" y="668" width="1600" height="5" fill="#8b8d87"/>
+  <rect x="0" y="839" width="1600" height="5" fill="#8b8d87"/>
+  ${Array.from({length:14},(_,i)=>
+    `<rect x="${i*118+20}" y="751" width="62" height="6" fill="#eceadf" opacity=".7"/>`).join('')}
+  <rect x="0" y="844" width="1600" height="60" fill="url(#grass)"/>
+  ${tufts(46)}
+  <g stroke="#fff" stroke-linecap="round" opacity=".4">
+    <line x1="300" y1="726" x2="470" y2="726" stroke-width="4"/>
+    <line x1="250" y1="752" x2="440" y2="752" stroke-width="3"/>
+    <line x1="330" y1="776" x2="480" y2="776" stroke-width="3.4"/></g></svg>`;
+}
+
+/* ============================================================
+   5. PIXEL CYCLIST
+   ============================================================ */
+const PAL={O:'#3a2a1f',W:'#f7f4ee',w:'#e6e1d6',s:'#cec7b9',
+           S:'#6d4a33',d:'#563824',G:'#17120f'};
+const TORSO=[
+  '...........OOOOO....','..........OWWWWWO...','.........OWWWWWWWO..',
+  '.........OWWSSSSWO..','........OWWSGGGGSO..','........OWWSSddSSO..',
+  '.......OWWWSddSWWO..','......OWWWWWSSWWWO..','.....OWWWWWWWWWWO...',
+  '....OWWWWWWWWWWWO...','...OWWWWWWWWWWWO....','..OWWWWWWWWWWWO.....',
+  '..OWWWWWWWWWWO......','.OWWWWWWWWWWO.......','.OWWWWWWWWWO........',
+  'OWwwwwwwwwO.........','OwwwwwwwwO..........','.OOOOOOOO...........'];
+const SW=46, SH=40;
+const HIP=[17,16], SHO=[28,10], HAND=[35,17], BB=[22,28], CRANK=4, L1=8, L2=9;
+const REAR=[11,28], FRONT=[36,28], R=6, SEAT=[16,17], HEADT=[34,16], BAR=[35,15];
+
+const px=(c,x,y,col)=>{c.fillStyle=col;c.fillRect(Math.round(x),Math.round(y),1,1);};
+function pline(c,x0,y0,x1,y1,col,w=1){
+  x0=Math.round(x0);y0=Math.round(y0);x1=Math.round(x1);y1=Math.round(y1);
+  const dx=Math.abs(x1-x0),dy=-Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1,r=Math.floor(w/2);
+  let err=dx+dy;
+  for(;;){
+    for(let a=-r;a<=w-1-r;a++)for(let b=-r;b<=w-1-r;b++)px(c,x0+a,y0+b,col);
+    if(x0===x1&&y0===y1)break;
+    const e2=2*err;
+    if(e2>=dy){err+=dy;x0+=sx;}
+    if(e2<=dx){err+=dx;y0+=sy;}
+  }
+}
+function pring(c,cx,cy,r,col,t=1){
+  for(let y=-r-1;y<=r+1;y++)for(let x=-r-1;x<=r+1;x++){
+    const d=Math.hypot(x,y); if(d<=r+.5&&d>=r-t) px(c,cx+x,cy+y,col);
+  }
+}
+function knee(hip,foot){
+  const dx=foot[0]-hip[0],dy=foot[1]-hip[1];
+  const d=Math.min(Math.hypot(dx,dy),L1+L2-.001);
+  const a=(L1*L1-L2*L2+d*d)/(2*d), h=Math.sqrt(Math.max(0,L1*L1-a*a));
+  const bx=hip[0]+dx*a/d, by=hip[1]+dy*a/d;
+  const p1=[bx+h*dy/d,by-h*dx/d], p2=[bx-h*dy/d,by+h*dx/d];
+  return p1[0]>p2[0]?p1:p2;
+}
+function leg(c,th,shade,bob){
+  const foot=[BB[0]+Math.cos(th)*CRANK, BB[1]+Math.sin(th)*CRANK];
+  const hip=[HIP[0],HIP[1]+bob], k=knee(hip,foot);
+  pline(c,hip[0],hip[1],k[0],k[1],PAL.O,4);
+  pline(c,hip[0],hip[1],k[0],k[1],shade,2);
+  pline(c,k[0],k[1],foot[0],foot[1],PAL.O,3);
+  pline(c,k[0],k[1],foot[0],foot[1],shade,1);
+  pline(c,foot[0]-1,foot[1]+1,foot[0]+2,foot[1]+1,PAL.O,1);
+  px(c,foot[0],foot[1],shade); px(c,foot[0]+1,foot[1],shade);
+}
+function drawCyclist(c,t){
+  c.clearRect(0,0,SW,SH);
+  const th=t*7.6, wh=-t*7.6, bob=Math.sin(th*2)>0?0:1;
+  leg(c,th+Math.PI,PAL.s,bob);
+  pline(c,SHO[0]-1,SHO[1]+1+bob,HAND[0],HAND[1]+bob,PAL.O,4);
+  pline(c,SHO[0]-1,SHO[1]+1+bob,HAND[0],HAND[1]+bob,PAL.s,2);
+  for(const p of [REAR,FRONT]){
+    pring(c,p[0],p[1],R,'#2b2b30',2);
+    pring(c,p[0],p[1],R-2,'#cfcabc',1);
+    for(let i=0;i<4;i++){
+      const a=wh+i*Math.PI/4;
+      pline(c,p[0],p[1],p[0]+Math.cos(a)*(R-2.4),p[1]+Math.sin(a)*(R-2.4),'#ded9cc',1);
+    }
+    px(c,p[0],p[1],'#8e8a7e');
+  }
+  const F='#3d3a46';
+  pline(c,REAR[0],REAR[1],BB[0],BB[1],F,2);
+  pline(c,BB[0],BB[1],SEAT[0],SEAT[1],F,2);
+  pline(c,SEAT[0],SEAT[1],REAR[0],REAR[1],F,1);
+  pline(c,SEAT[0],SEAT[1],HEADT[0],HEADT[1],F,2);
+  pline(c,BB[0],BB[1],HEADT[0],HEADT[1],F,2);
+  pline(c,HEADT[0],HEADT[1],FRONT[0],FRONT[1],F,2);
+  pline(c,SEAT[0]-2,SEAT[1],SEAT[0]+2,SEAT[1],'#23202a',1);
+  pring(c,BB[0],BB[1],2,'#6a6578',1);
+  for(let y=0;y<TORSO.length;y++)for(let x=0;x<20;x++){
+    const ch=TORSO[y][x]; if(ch!=='.') px(c,14+x,y+bob,PAL[ch]);
+  }
+  pline(c,SHO[0],SHO[1]+bob,HAND[0],HAND[1]-1+bob,PAL.O,4);
+  pline(c,SHO[0],SHO[1]+bob,HAND[0],HAND[1]-1+bob,PAL.W,2);
+  leg(c,th,PAL.W,bob);
+  pline(c,BAR[0]-3,BAR[1],BAR[0]+1,BAR[1],'#23202a',1);
+}
+function mountRider(host,scale){
+  const cv=document.createElement('canvas');
+  cv.width=SW*scale; cv.height=SH*scale;
+  cv.style.cssText=`width:${cv.width}px;height:${cv.height}px;display:block`;
+  host.appendChild(cv);
+  const x=cv.getContext('2d');
+  x.imageSmoothingEnabled=false; x.setTransform(scale,0,0,scale,0,0);
+  const t0=performance.now();
+  (function loop(n){drawCyclist(x,(n-t0)/1000);requestAnimationFrame(loop);})(t0);
+}
+
+/* ============================================================
+   6. BOOT
+   ============================================================ */
+document.querySelectorAll('[data-scene]').forEach(el=>{
+  el.innerHTML = el.dataset.scene==='side' ? sceneSide() : sceneFull();
+});
+document.querySelectorAll('[data-rider]').forEach(el=>mountRider(el,1.5));
+
+const f2=document.querySelectorAll('.holder')[1];
+const wrap=document.createElement('div');
+wrap.style.cssText='position:absolute;inset:0;z-index:20;pointer-events:none;overflow:hidden';
+const hold=document.createElement('div');
+hold.style.cssText='position:absolute;bottom:11%;animation:ride 6s linear infinite';
+wrap.appendChild(hold); f2.appendChild(wrap);
+mountRider(hold,4);
+</script>
+</body>
+</html>
