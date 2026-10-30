@@ -55,6 +55,10 @@ html { scroll-behavior: smooth; }
 
 body {
   position: relative;            /* anchor for the footer art in the page's bottom-right corner */
+  /* The collage is 100vw wide and centred with a negative offset; 100vw counts
+     the scrollbar, so its overhang would otherwise be a stray h-scroll.
+     hidden, not clip: this propagates to the viewport, where clip is ignored. */
+  overflow-x: hidden;
   background-color: var(--bg);
   color: var(--ink);
 }

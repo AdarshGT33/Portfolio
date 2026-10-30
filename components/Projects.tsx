@@ -4,51 +4,49 @@ import AccordionItem, { linkRow, linkCls } from "./AccordionItem";
 
 export type Project = {
   id: string; name: string; status: string; tagline: string;
-  availability?: string; story: string; links: { label: string; href: string }[];
+  /** Three bullets: name what was built, say what it solved, carry a real number. */
+  availability?: string; story: string[]; links: { label: string; href: string }[];
 };
 
 export const defaultProjects: Project[] = [
-  { id: "fin-mcp", name: "Financial Context MCP Server", status: "Run locally",
-    tagline: "Market data and news as tools for agents.",
-    availability: "Runs locally with Ollama.",
-    story: "Agents are bad at stale numbers. This server gives them live prices and headlines, with caching and rate limiting so they stay fast and polite.",
-    links: [{ label: "Project notes", href: "#" }] },
-  { id: "postmortem", name: "Incident Post-Mortem Assistant", status: "Run locally",
+  { id: "onvice", name: "Onvice", status: "In progress, runs locally",
+    tagline: "Deploy a public GitHub repo from one API call.",
+    story: [
+      "Built a Go deployment API (Gin) where you POST a GitHub URL and get a deployment id back, after it checks with GitHub that the repo is real and public.",
+      "Work disappears when a worker dies mid-build. Postgres is the queue itself; each job is leased for 15 minutes, so a dead worker's job returns to the queue instead of going missing.",
+      "The first attempt pins the commit SHA, and the 3 retries back off 30s, 60s and 120s against that exact commit. A retry that builds different code is worse than no retry.",
+    ],
+    links: [{ label: "Repo Link", href: "https://github.com/AdarshGT33/onvice" }] },
+  { id: "fin-mcp", name: "Competitor Research MCP Server", status: "Run locally with Ollama",
+    tagline: "Research companies across web, news and finances and get persisted results.",
+    story: [
+      "Built a multi-agent research system where a coordinator sends web, news and finance agents out per competitor and merges what they bring back into one briefing.",
+      "Up to 12 calls run at once across 4 agents per competitor, and asyncio.gather(return_exceptions=True) means a single failure still leaves a usable report.",
+      "Cloud models cost money and see your data. Everything runs on a local gemma3:4b through Ollama, with web search and SQLite storage exposed as MCP servers so past research comes back without paying for it twice.",
+    ],
+    links: [{ label: "Repo Link", href: "https://github.com/AdarshGT33/competitor_research_mcp" }] },
+  { id: "postmortem", name: "Incident Post-Mortem Assistant", status: "Run locally with Ollama",
     tagline: "Turns raw incident notes into structured post-mortems.",
-    availability: "Runs locally with Ollama.",
-    story: "Paste messy notes, watch a post-mortem stream in, and export it in two formats.",
-    links: [{ label: "Project notes", href: "#" }] },
+    story: [
+      "After an incident nobody wants to write it up. Built a FastAPI tool that turns raw on-call notes into a structured post-mortem: root cause, timeline, action items and lessons learned.",
+      "A local model that wraps its answer in markdown breaks the parser. 3 layers catch it — JSON mode at temperature 0.2, a regex fallback that strips the fences, and a Pydantic schema that refuses to write anything malformed to SQLite.",
+      "Incident notes shouldn't leave the building. The whole thing runs on-premise through Ollama, with 5 REST endpoints and Markdown plus JSON export so a post-mortem can be shared without a cloud account.",
+    ],
+    links: [{ label: "Repo Link", href: "https://github.com/AdarshGT33/cyber-postmortem-assistant" }] },
   { id: "haha-ok", name: "Haha Ok", status: "Live",
     tagline: "A playful full-stack AI chatbot.",
-    availability: "Available to use online.",
-    story: "Auth, saved chat history, rate limiting and streaming replies, wrapped in a personality that doesn't take itself seriously.",
-    links: [{ label: "Project notes", href: "#" }, { label: "Try it", href: "https://haha-ok.vercel.app" }] },
-  { id: "portfolio", name: "Portfolio", status: "Live",
-    tagline: "This site.", story: "Next.js, with all content kept in one data file.",
-    links: [{ label: "Project notes", href: "#" }] },
-];
-
-export type Hackathon = {
-  id: string; name: string; result: string; date: string;
-  details?: string; link?: { label: string; href: string };
-};
-
-// Placeholders: replace with your real hackathons.
-export const defaultHackathons: Hackathon[] = [
-  { id: "hk-1", name: "Hackathon name", result: "Prize or result", date: "Month YYYY",
-    details: "What you built, in a sentence or two." },
-  { id: "hk-2", name: "Hackathon name", result: "Prize or result", date: "Month YYYY",
-    details: "What you built, in a sentence or two." },
-  { id: "hk-3", name: "Hackathon name", result: "Prize or result", date: "Month YYYY",
-    details: "What you built, in a sentence or two." },
+    story: [
+      "Built a full-stack chat app — Clerk for sign-in, Supabase Postgres for users, conversations and messages — so every thread is still there when you come back.",
+      "Groq's llama-3.1-8b-instant streams through a TransformStream, so words appear as they are written and the message is saved once the stream closes.",
+      "Usage is counted across all of a user's conversations in a rolling 5-hour window — 10 messages free, 30 paid — so cost is capped per person, not per chat.",
+    ],
+    links: [{ label: "Repo Link", href: "https://github.com/AdarshGT33/haha-ok" }, { label: "Try it", href: "https://haha-ok.vercel.app" }] },
 ];
 
 export default function Projects({
   projects = defaultProjects,
   visible = 3,
-  hackathons = defaultHackathons,
-  hackathonsNote = "A few highlights from hackathons.",
-}: { projects?: Project[]; visible?: number; hackathons?: Hackathon[]; hackathonsNote?: string }) {
+}: { projects?: Project[]; visible?: number }) {
   const [open, setOpen] = useState<string | null>(null);
   const [all, setAll] = useState(false);
   const shown = all ? projects : projects.slice(0, visible);
@@ -59,7 +57,7 @@ export default function Projects({
         Things I&apos;ve made<span className="text-link">.</span>
       </h1>
       <p className="mb-12 mt-5 text-[20px] leading-[1.8] text-ink-soft">
-        Developer tools, AI experiments, and a few trips into systems programming. Open a project for its story and source.
+        Developer tools, AI experiments, and architecture and infra development; All an excuse of self expression. Below are only tip of the iceberg that I built, visit Github for more. 
       </p>
 
       {shown.map((p) => {
@@ -79,7 +77,9 @@ export default function Projects({
             }
           >
             {p.availability && <p className="mb-4">{p.availability}</p>}
-            <p className="mb-4">{p.story}</p>
+            <ul className="mb-4 list-disc space-y-2 pl-5 marker:text-link">
+              {p.story.map((point) => <li key={point}>{point}</li>)}
+            </ul>
             <div className={linkRow}>
               {p.links.map((l) => (
                 <a key={l.label} href={l.href} target="_blank" rel="noreferrer" className={linkCls}>{l.label} ↗</a>
@@ -102,42 +102,6 @@ export default function Projects({
             <path d="m6 9 6 6 6-6" />
           </svg>
         </button>
-      )}
-
-      {hackathons.length > 0 && (
-        <div className="mt-[88px]">
-          <h2 className="border-b border-hairline pb-6 text-[18px] font-semibold text-ink">Built against the clock</h2>
-          <p className="mb-6 mt-7 text-[20px] leading-[1.8] text-ink-soft">{hackathonsNote}</p>
-          {hackathons.map((h) => {
-            const id = `hk-${h.id}`;
-            const isOpen = open === id;
-            return (
-              <AccordionItem
-                key={h.id}
-                id={id}
-                dense
-                open={isOpen}
-                onToggle={() => setOpen(isOpen ? null : id)}
-                head={
-                  <>
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-[19px] font-semibold">{h.name}</span>
-                      <span className="mt-1 block text-[17px] text-ink-soft">{h.result}</span>
-                    </span>
-                    <span className="whitespace-nowrap text-[13px] text-ink-soft">{h.date}</span>
-                  </>
-                }
-              >
-                {h.details && <p>{h.details}</p>}
-                {h.link && (
-                  <div className={linkRow}>
-                    <a href={h.link.href} target="_blank" rel="noreferrer" className={linkCls}>{h.link.label} ↗</a>
-                  </div>
-                )}
-              </AccordionItem>
-            );
-          })}
-        </div>
       )}
     </section>
   );

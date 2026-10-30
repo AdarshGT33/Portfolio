@@ -4,18 +4,29 @@ import AccordionItem, { linkRow, linkCls } from "./AccordionItem";
 
 export type Job = {
   id: string; company: string; role: string; dates: string;
-  summary: string; logo?: string; link?: { label: string; href: string };
+  /** Two or three bullets: name what was built, say what it solved, carry a real number. */
+  summary: string[]; logo?: string; link?: { label: string; href: string };
 };
 
-// Placeholders: replace with your real roles / consulting work.
 export const defaultJobs: Job[] = [
-  { id: "job-1", company: "South Asian Institute for Crime and Justice", role: "AIML Engineer", dates: "July 2026 to now",
-    summary: "Short paragraph on what you build here and what you own.",
-    link: { label: "Visit Company name", href: "https://www.saicjs.com/suraksha-lens-1" } },
+  { id: "job-1", company: "Suraksha Lens", role: "AIML Engineer", dates: "July 2026 to now",
+    summary: [
+      "The dashboard holds 4 layers of climate and crime data across 650+ districts(India and Sri Lanka), but you had to know where to look. With the AI assistant chatbot (built from scratch), you can now ask a question in plain words and get reliable answers back, any district, any year.",
+      "You can speak instead of type, in any of seven regional languages, and it works out which one you used. Built a benchmark harness that checks speaking gets you the same answer as typing, holding transcription error near 2%.",
+    ],
+    link: { label: "Suraksha Lens", href: "https://www.saicjs.com/suraksha-lens-1" } },
   { id: "job-2", company: "BackkBenchers", role: "AI Creative Technologist", dates: "Jan 2026 to Mar 2026",
-    summary: "Short paragraph on the work.", link: { label: "BackkBenchers", href: "https://backkbenchers.in/#" } },
+    summary: [
+      "Video ads cost more than these brands could spend. Built a prompt-to-video pipeline — Gemini for the storyline, Veo 3.0 for the shots — that turned out 60+ finished ads at 2–3 a day.",
+      "Volume only helps if the work doesn't come back. Brand voice went into the prompts themselves, so ads shipped with almost no revision rounds and pulled 3K–17K organic views a post.",
+    ],
+    link: { label: "BackkBenchers", href: "https://backkbenchers.in/#" } },
   { id: "job-3", company: "Ekanga", role: "AI Research Intern", dates: "09 2025 to Dec 2025",
-    summary: "Short paragraph on the work.", link: { label: "Ekanga", href: "https://www.ekanga.in/"} },
+    summary: [
+      "An avatar that looks different every run can't carry a product. The multi-modal AI avatar system I built with the CEO holds one identity through a prompt refinement pipeline; inconsistencies down 30%, iteration time down 25%.",
+      "Fidelity was the blocker. 700+ prompts tuned across Stable Diffusion, Midjourney and Gemini lifted visual quality 40% over baseline, and settled which models the system runs on.",
+    ],
+    link: { label: "Ekanga", href: "https://www.ekanga.in/"} },
 ];
 
 export default function Work({ jobs = defaultJobs }: { jobs?: Job[] }) {
@@ -48,7 +59,9 @@ export default function Work({ jobs = defaultJobs }: { jobs?: Job[] }) {
               </>
             }
           >
-            <p className="mb-4">{j.summary}</p>
+            <ul className="mb-4 list-disc space-y-2 pl-5 marker:text-link">
+              {j.summary.map((point) => <li key={point}>{point}</li>)}
+            </ul>
             {j.link && (
               <div className={linkRow}>
                 <a href={j.link.href} target="_blank" rel="noreferrer" className={linkCls}>{j.link.label} ↗</a>

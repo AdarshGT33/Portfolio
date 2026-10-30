@@ -1,21 +1,20 @@
 "use client";
 import type { ReactNode } from "react";
 
-/** Shared expand/collapse row used by Projects, Work and the hackathon list. */
+/** Shared expand/collapse row used by Projects and Work. */
 export default function AccordionItem({
-  id, open, onToggle, head, children, indent = false, dense = false,
+  id, open, onToggle, head, children, indent = false,
 }: {
   id: string; open: boolean; onToggle: () => void;
   head: ReactNode;       // left side of the header row
   children: ReactNode;   // expanded body
   indent?: boolean;      // align body under a logo
-  dense?: boolean;       // tighter rows (hackathon list)
 }) {
   return (
     <div
-      className={`-mx-3.5 rounded-xl border px-3.5 transition-colors motion-reduce:transition-none ${
-        dense ? "py-[18px]" : "py-[21px]"
-      } ${open ? "border-[color:var(--card-line)] bg-[var(--card)]" : "border-transparent"}`}
+      className={`-mx-3.5 rounded-xl border px-3.5 py-[21px] transition-colors motion-reduce:transition-none ${
+        open ? "border-[color:var(--card-line)] bg-[var(--card)]" : "border-transparent"
+      }`}
     >
       <button
         type="button"
