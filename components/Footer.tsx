@@ -53,8 +53,14 @@ const SCENE = {
 
 const cta = (): { label: string; href: string }[] => [
   { label: "Let's talk", href: `mailto:${profile.email}` },
-  { label: "Resume", href: "/resume.pdf" }, // TODO: path to your resume
+  // Named after the file in public/ so a recruiter's download folder says who it is.
+  { label: "Resume", href: "/AdarshSinghTomarResume.pdf" },
 ];
+
+// A site route opens in place; a file (the resume) opens in a new tab, so the
+// PDF viewer doesn't replace the page they came to read.
+const opensInPlace = (href: string) =>
+  href.startsWith("mailto:") || (href.startsWith("/") && !href.includes("."));
 
 // Image size: the one knob. Height follows the photo's own aspect ratio, so all of it is always visible.
 const SCENE_W = "clamp(150px, 20vw, 260px)";
@@ -140,7 +146,7 @@ export default function Footer({
             <a
               key={a.label}
               href={a.href}
-              {...(a.href.startsWith("mailto:") || a.href.startsWith("/") ? {} : { target: "_blank", rel: "noreferrer" })}
+              {...(opensInPlace(a.href) ? {} : { target: "_blank", rel: "noreferrer" })}
               className={`${linkCls} text-[20px] font-medium`}
             >
               {a.label} <span aria-hidden>↗</span>
