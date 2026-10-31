@@ -56,15 +56,18 @@ export default function Nav() {
   }, [router, pathname]);
 
   return (
-    <nav className="flex flex-wrap items-center gap-x-10 gap-y-2 pt-10 sm:pt-14" aria-label="Primary">
+    <nav className="flex flex-wrap items-center gap-x-5 gap-y-1 pt-10 sm:gap-x-10 sm:pt-14" aria-label="Primary">
       {ITEMS.map((item) => {
         const current = item.href === pathname;
-        const cls = `group text-[16px] transition-colors ${
+        // py-2.5 is tap area, not spacing -- 16px text alone is a 25px target.
+        const cls = `group py-2.5 text-[16px] transition-colors ${
           current ? "font-medium text-link-hover" : "text-link hover:text-link-hover"
         }`;
         const inner = (
           <>
-            <span className="font-mono opacity-60 transition-opacity group-hover:opacity-100">[{item.key}]</span>{" "}
+            {/* The bracket is a keyboard hint; a phone has no keyboard, and hiding
+                it is also what keeps all four items on one line. */}
+            <span className="hidden font-mono opacity-60 transition-opacity group-hover:opacity-100 sm:inline">[{item.key}]</span>{" "}
             {item.label}
           </>
         );
@@ -80,9 +83,9 @@ export default function Nav() {
         type="button"
         onClick={toggleTheme}
         aria-label="Switch between dark and light theme"
-        className="group ml-auto text-[16px] text-link transition-colors hover:text-link-hover"
+        className="group ml-auto py-2.5 text-[16px] text-link transition-colors hover:text-link-hover"
       >
-        <span className="font-mono opacity-60 transition-opacity group-hover:opacity-100">[t]</span>{" "}
+        <span className="hidden font-mono opacity-60 transition-opacity group-hover:opacity-100 sm:inline">[t]</span>{" "}
         theme
       </button>
     </nav>

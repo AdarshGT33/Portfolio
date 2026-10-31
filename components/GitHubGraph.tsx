@@ -89,7 +89,7 @@ export default async function GitHubGraph() {
           href={`https://${profile.github}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[15px] text-link transition-colors hover:text-link-hover"
+          className="py-2 text-[15px] text-link transition-colors hover:text-link-hover sm:py-0"
         >
           {" "}
           {profile.githubUser} ↗{" "}

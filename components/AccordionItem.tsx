@@ -45,4 +45,4 @@ export default function AccordionItem({
 }
 
 export const linkRow = "mt-5 flex flex-wrap gap-x-8 gap-y-2";
-export const linkCls = "text-[17px] text-link transition-colors hover:text-link-hover hover:underline";
+export const linkCls = "inline-block py-2 text-[17px] text-link transition-colors hover:text-link-hover hover:underline sm:py-0";

@@ -54,8 +54,11 @@ export default function Work({ jobs = defaultJobs }: { jobs?: Job[] }) {
                 <span className="min-w-0 flex-1">
                   <span className="block text-[19px] font-semibold">{j.company}</span>
                   <span className="mt-1 block text-[17px] text-ink-soft">{j.role}</span>
+                  {/* On a phone the dates sit under the role; side by side they
+                      tangle with a role long enough to wrap. */}
+                  <span className="mt-1 block text-[15px] text-ink-soft sm:hidden">{j.dates}</span>
                 </span>
-                <span className="whitespace-nowrap text-[15px] text-ink-soft">{j.dates}</span>
+                <span className="hidden whitespace-nowrap text-[15px] text-ink-soft sm:inline">{j.dates}</span>
               </>
             }
           >

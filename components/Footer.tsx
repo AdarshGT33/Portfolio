@@ -126,7 +126,9 @@ export default function Footer({
     "--scene-h": `calc(${SCENE_W} / ${scene.img.width / scene.img.height})`,
   } as CSSProperties;
 
-  const linkCls = "inline-flex items-center gap-2 text-link transition-colors hover:text-link-hover";
+  // py-2 on touch widths only: 30px of text is under the 44px tap minimum,
+  // and desktop spacing stays exactly as it was.
+  const linkCls = "inline-flex items-center gap-2 py-2 text-link transition-colors hover:text-link-hover sm:py-0";
 
   return (
     <>

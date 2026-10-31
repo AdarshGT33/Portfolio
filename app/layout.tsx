@@ -47,7 +47,9 @@ export default function RootLayout({
         {/* Chrome lives in the layout, so petals, nav and footer survive route changes
             and every page lands in the same 760px column. Only {children} swaps. */}
         <CherryBlossom />
-        <main id="top" className="mx-auto flex min-h-screen max-w-page flex-col px-6 sm:px-0">
+        {/* Gutter until the viewport is wider than the 760px column -- with
+            sm:px-0 the text went flush to the edge on every screen in between. */}
+        <main id="top" className="mx-auto flex min-h-screen max-w-page flex-col px-6 min-[800px]:px-0">
           <Nav />
           <div className="flex-1">{children}</div>
           <Footer />

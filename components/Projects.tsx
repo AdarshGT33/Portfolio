@@ -71,7 +71,7 @@ export default function Projects({
             head={
               <span className="min-w-0 flex-1">
                 <span className="text-[19px] font-semibold">{p.name}</span>
-                <span className="ml-3 text-[13px] text-ink-soft">{p.status}</span>
+                <span className="mt-1 block text-[13px] text-ink-soft sm:ml-3 sm:mt-0 sm:inline">{p.status}</span>
                 <span className="mt-1 block text-[17px] text-ink-soft">{p.tagline}</span>
               </span>
             }
@@ -93,7 +93,7 @@ export default function Projects({
         <button
           type="button"
           onClick={() => setAll(!all)}
-          className="mt-10 inline-flex items-center gap-2 text-[15px] text-link transition-colors hover:text-link-hover"
+          className="mt-10 inline-flex items-center gap-2 py-2 text-[15px] text-link transition-colors hover:text-link-hover sm:py-0"
         >
           {all ? "Show fewer" : `Show all projects (${projects.length})`}
           <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor"
