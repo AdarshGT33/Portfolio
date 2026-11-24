@@ -1,35 +1,9 @@
 "use client";
 import { useState } from "react";
 import AccordionItem, { linkRow, linkCls } from "./AccordionItem";
+import { jobs as allJobs, type Job } from "@/lib/data";
 
-export type Job = {
-  id: string; company: string; role: string; dates: string;
-  /** Two or three bullets: name what was built, say what it solved, carry a real number. */
-  summary: string[]; logo?: string; link?: { label: string; href: string };
-};
-
-export const defaultJobs: Job[] = [
-  { id: "job-1", company: "Suraksha Lens", role: "AIML Engineer", dates: "July 2026 to now",
-    summary: [
-      "The dashboard holds 4 layers of climate and crime data across 650+ districts (India and Sri Lanka), but you had to know where to look. With the AI assistant chatbot (built from scratch), you can now ask a question in plain words and get reliable answers back, any district, any year.",
-      "You can speak instead of typing, in any of seven regional languages, and it works out which one you used. Built a benchmark harness that checks speaking gets you the same answer as typing, holding transcription error near 2%.",
-    ],
-    link: { label: "Suraksha Lens", href: "https://www.saicjs.com/suraksha-lens-1" } },
-  { id: "job-2", company: "BackkBenchers", role: "AI Creative Technologist", dates: "Jan 2026 to Mar 2026",
-    summary: [
-      "Video ads cost more than these brands could spend. Built a prompt-to-video pipeline — Gemini for the storyline, Veo 3.0 for the shots — that turned out 60+ finished ads at 2–3 a day.",
-      "Volume only helps if the work doesn't come back. Brand voice went into the prompts themselves, so ads shipped with almost no revision rounds and pulled 3K–17K organic views a post.",
-    ],
-    link: { label: "BackkBenchers", href: "https://backkbenchers.in/#" } },
-  { id: "job-3", company: "Ekanga", role: "AI Research Intern", dates: "Sep 2025 to Dec 2025",
-    summary: [
-      "An avatar that looks different every run can't carry a product. The multi-modal AI avatar system I built with the CEO holds one identity through a prompt refinement pipeline; inconsistencies down 30%, iteration time down 25%.",
-      "Fidelity was the blocker. 700+ prompts tuned across Stable Diffusion, Midjourney and Gemini lifted visual quality 40% over baseline, and settled which models the system runs on.",
-    ],
-    link: { label: "Ekanga", href: "https://www.ekanga.in/"} },
-];
-
-export default function Work({ jobs = defaultJobs }: { jobs?: Job[] }) {
+export default function Work({ jobs = allJobs }: { jobs?: Job[] }) {
   const [open, setOpen] = useState<string | null>(jobs[0]?.id ?? null);
 
   return (

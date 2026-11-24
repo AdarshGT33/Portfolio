@@ -1,50 +1,10 @@
 "use client";
 import { useState } from "react";
 import AccordionItem, { linkRow, linkCls } from "./AccordionItem";
-
-export type Project = {
-  id: string; name: string; status: string; tagline: string;
-  /** Three bullets: name what was built, say what it solved, carry a real number. */
-  availability?: string; story: string[]; links: { label: string; href: string }[];
-};
-
-export const defaultProjects: Project[] = [
-  { id: "onvice", name: "Onvice", status: "In progress, runs locally",
-    tagline: "Deploy a public GitHub repo from one API call.",
-    story: [
-      "Built a Go deployment API (Gin) where you POST a GitHub URL and get a deployment id back, after it checks with GitHub that the repo is real and public.",
-      "Work disappears when a worker dies mid-build. Postgres is the queue itself; each job is leased for 15 minutes, so a dead worker's job returns to the queue instead of going missing.",
-      "The first attempt pins the commit SHA, and the 3 retries back off 30s, 60s and 120s against that exact commit. A retry that builds different code is worse than no retry.",
-    ],
-    links: [{ label: "Repo Link", href: "https://github.com/AdarshGT33/onvice" }] },
-  { id: "fin-mcp", name: "Competitor Research MCP Server", status: "Run locally with Ollama",
-    tagline: "Research companies across web, news and finances and get persisted results.",
-    story: [
-      "Built a multi-agent research system where a coordinator sends web, news and finance agents out per competitor and merges what they bring back into one briefing.",
-      "Up to 12 calls run at once across 4 agents per competitor, and asyncio.gather(return_exceptions=True) means a single failure still leaves a usable report.",
-      "Cloud models cost money and see your data. Everything runs on a local gemma3:4b through Ollama, with web search and SQLite storage exposed as MCP servers so past research comes back without paying for it twice.",
-    ],
-    links: [{ label: "Repo Link", href: "https://github.com/AdarshGT33/competitor_research_mcp" }] },
-  { id: "postmortem", name: "Incident Post-Mortem Assistant", status: "Run locally with Ollama",
-    tagline: "Turns raw incident notes into structured post-mortems.",
-    story: [
-      "After an incident nobody wants to write it up. Built a FastAPI tool that turns raw on-call notes into a structured post-mortem: root cause, timeline, action items and lessons learned.",
-      "A local model that wraps its answer in markdown breaks the parser. 3 layers catch it — JSON mode at temperature 0.2, a regex fallback that strips the fences, and a Pydantic schema that refuses to write anything malformed to SQLite.",
-      "Incident notes shouldn't leave the building. The whole thing runs on-premise through Ollama, with 5 REST endpoints and Markdown plus JSON export so a post-mortem can be shared without a cloud account.",
-    ],
-    links: [{ label: "Repo Link", href: "https://github.com/AdarshGT33/cyber-postmortem-assistant" }] },
-  { id: "haha-ok", name: "Haha Ok", status: "Live",
-    tagline: "A playful full-stack AI chatbot.",
-    story: [
-      "Built a full-stack chat app — Clerk for sign-in, Supabase Postgres for users, conversations and messages — so every thread is still there when you come back.",
-      "Groq's llama-3.1-8b-instant streams through a TransformStream, so words appear as they are written and the message is saved once the stream closes.",
-      "Usage is counted across all of a user's conversations in a rolling 5-hour window — 10 messages free, 30 paid — so cost is capped per person, not per chat.",
-    ],
-    links: [{ label: "Repo Link", href: "https://github.com/AdarshGT33/haha-ok" }, { label: "Try it", href: "https://haha-ok.vercel.app" }] },
-];
+import { projects as allProjects, type Project } from "@/lib/data";
 
 export default function Projects({
-  projects = defaultProjects,
+  projects = allProjects,
   visible = 3,
 }: { projects?: Project[]; visible?: number }) {
   const [open, setOpen] = useState<string | null>(null);

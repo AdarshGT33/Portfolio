@@ -3,6 +3,7 @@ import { Space_Grotesk, Inter, IBM_Plex_Mono } from "next/font/google";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import CherryBlossom from "@/components/CherryBlossom";
+import ChatWidget from "@/components/ChatWidget";
 import "./globals.css";
 
 const display = Space_Grotesk({
@@ -59,6 +60,7 @@ export default function RootLayout({
           <div className="flex-1">{children}</div>
           <Footer />
         </main>
+        <ChatWidget />
       </body>
     </html>
   );
