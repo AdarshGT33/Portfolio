@@ -1,4 +1,5 @@
-// All portfolio content lives here so it's easy to update without touching components.
+// Profile, home-page and collage content. Projects and Work entries live in
+// components/Projects.tsx and components/Work.tsx (defaultProjects / defaultJobs).
 
 export const profile = {
   name: "Adarsh Singh Tomar",
@@ -8,12 +9,11 @@ export const profile = {
   homeCity: "Bengaluru",
   homeCoords: [12.9716, 77.5946] as [number, number],
   homeTimeZone: "Asia/Kolkata",
-  // TODO: replace with your real contact details before deploying
   email: "tomaradarsh18@gmail.com",
   linkedin: "www.linkedin.com/in/adarsh-singh-tomar-46b6451bb/",
   github: "github.com/AdarshGT33",
   githubUser: "AdarshGT33",
-  bio: "Started as a web developer and grew preference for backend. Now I'm building complex and challenging back-end and AI systems in production.",
+  bio: "Started as a web developer and grew a preference for backend. Now I'm building complex and challenging back-end and AI systems in production.",
 };
 
 /** Top nav. `key` is the single-letter keyboard shortcut shown in brackets. */
@@ -26,7 +26,7 @@ export const nav = [
 /** The "currently / co-founded / prev" lines under the bio. */
 export const timeline = [
   {
-    lead: "currently leading AI product deveolopment at",
+    lead: "currently leading AI product development at",
     org: "Suraksha Lens",
     href: "https://www.saicjs.com/suraksha-lens-1",
     trail: ", as AI/ML consultant",
@@ -43,32 +43,9 @@ export const timeline = [
   },
 ];
 
-// TODO: rewrite in your own words — this is a placeholder in psudokit's shape.
 export const asides = [
-  "I flourish in a high agency environment, undivided attention, I doubt doubt, and I talk to myself out loud often, awfully lot",
+  "I flourish in a high agency environment, undivided attention, I doubt doubt, and I talk to myself out loud often, an awful lot",
   "also music/movies/sports · want to afford going to swimming.",
-];
-
-export const projects = [
-  {
-    name: "Haha Ok",
-    dates: "2026",
-    repo: "https://github.com/AdarshGT33/haha-ok",
-    demo: "https://haha-ok.vercel.app",
-    stack: ["Next.js", "Clerk", "Supabase", "Groq"],
-  },
-  {
-    name: "Cyber-Incident Post-mortem Assistant",
-    dates: "Apr – May 2026",
-    repo: "https://github.com/AdarshGT33/cyber-postmortem-assistant",
-    stack: ["FastAPI", "asyncio", "aiosqlite", "Ollama", "Pydantic v2"],
-  },
-  {
-    name: "Competitor Research MCP",
-    dates: "Feb – Mar 2026",
-    repo: "https://github.com/AdarshGT33/competitor_research_mcp",
-    stack: ["Python", "LangGraph", "MCP", "SQLite", "Ollama"],
-  },
 ];
 
 /**

@@ -20,6 +20,8 @@ export default function Hero() {
             {t.lead}{" "}
             <a
               href={t.href}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-link underline decoration-[color:var(--link-line)] underline-offset-[6px] transition-colors hover:text-link-hover hover:decoration-[color:var(--link)]"
             >
               {t.org}

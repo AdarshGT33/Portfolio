@@ -57,7 +57,7 @@ export default function Projects({
         Things I&apos;ve made<span className="text-link">.</span>
       </h1>
       <p className="mb-12 mt-5 text-[20px] leading-[1.8] text-ink-soft">
-        Developer tools, AI experiments, and architecture and infra development; All an excuse of self expression. Below are only tip of the iceberg that I built, visit Github for more. 
+        Developer tools, AI experiments, and architecture and infra development; all an excuse for self-expression. These are only the tip of the iceberg of what I&apos;ve built, visit GitHub for more.
       </p>
 
       {shown.map((p) => {

@@ -24,7 +24,12 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Adarsh Singh Tomar — AI/ML Engineer & Agentic Workflows",
+  // Sub-pages set a bare title ("Projects"); the template appends the name so
+  // tabs, search results and link previews still say whose site it is.
+  title: {
+    default: "Adarsh Singh Tomar — AI/ML Engineer & Agentic Workflows",
+    template: "%s — Adarsh Singh Tomar",
+  },
   description:
     "Adarsh Singh Tomar builds AI/ML systems, backend infra, and agentic tools — currently building multilingual voice AI at Suraksha Lens.",
 };
