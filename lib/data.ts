@@ -59,9 +59,9 @@ export const projects: Project[] = [
   { id: "onvice", name: "Onvice", status: "In progress, runs locally",
     tagline: "Deploy a public GitHub repo from one API call.",
     story: [
-      "Built a Go deployment API (Gin) where you POST a GitHub URL and get a deployment id back, after it checks with GitHub that the repo is real and public.",
-      "Work disappears when a worker dies mid-build. Postgres is the queue itself; each job is leased for 15 minutes, so a dead worker's job returns to the queue instead of going missing.",
-      "The first attempt pins the commit SHA, and the 3 retries back off 30s, 60s and 120s against that exact commit. A retry that builds different code is worse than no retry.",
+      "Built a Go platform that turns a public GitHub repo into a live app at its own HTTPS subdomain. No Dockerfile needed: it detects 4 stacks (Node, Python, Go, static), writes one, builds the image and runs it in a capped container.",
+      "A deploy that takes the site down is worse than no deploy. The new container must pass a health check before traffic moves to it, so 291 of 291 requests succeeded during a live redeploy, and a rollback reuses the previous image to be live again in 4 seconds.",
+      "Postgres is both the job queue and the referee. Each job is leased for 15 minutes so a dead worker's build comes back, and unique indexes allow one deploy in flight per app: fire 5 redeploys at once and exactly 1 gets in.",
     ],
     links: [{ label: "Repo Link", href: "https://github.com/AdarshGT33/onvice" }] },
   { id: "fin-mcp", name: "Competitor Research MCP Server", status: "Run locally with Ollama",
